@@ -34,6 +34,7 @@
             </div>
             <div class="form-group row">
                 <div class="col-5 offset-3">
+
                     <partial name="_CreateAndBackToListButton" />
                 </div>
             </div>
@@ -45,8 +46,44 @@
             <p> Bestaande Sub categorieën: </p>
 
             <div id="SubCategoryList">
-                <ul class="list-group"></ul>
+                <ul class="list-group">
+                </ul>
             </div>
         }
     </div>
 </div>
+@section Scripts{
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        function updateSubCategoryList() {
+            var categorySelected = document.getElementById("ddlCategorylist").value;
+            //hetzelfde maar met jquery:
+            //var categorySelected = $('#ddlCategorylist').value
+            //met jquery:
+            $list = $('#SubCategoryList') //klassieke methode: var list = document.getElementById("SubCategoryList")
+            $.ajax({
+                url: '/Admin/SubCategories/GetSubCategory/' + categorySelected,
+                type: 'GET',
+                dataType: 'text',
+                success: function (data) {
+                    results = JSON.parse(data);
+                    $list.html('');
+                    $list.append(' <ul class="list-group"> ');
+                    for (i in results) {
+                        $list.append('<li class="list-group-item">' + results[i].text + '</li>');
+                    }
+                    $list.append('</ul>');
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            updateSubCategoryList();
+        });
+
+        $("#ddlCategorylist").on("change", function () {
+            updateSubCategoryList();
+        });
+
+    </script>
+ }

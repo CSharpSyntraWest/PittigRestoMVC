@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PittigRestoMVC.Data;
 using PittigRestoMVC.Models;
@@ -29,6 +30,14 @@ namespace PittigRestoMVC.Areas.Admin.Controllers
             model.SubCategory = new SubCategory();
             model.SubCategoryList = await _db.SubCategory.OrderBy(c => c.Name).Select(c => c.Name).Distinct().ToListAsync();
             return View(model);
+        }
+        public async Task<IActionResult> GetSubCategory(int id)
+        {
+            List<SubCategory> subCategories = new List<SubCategory>();
+            subCategories = await (from subCategory in _db.SubCategory
+                                   where subCategory.CategoryId == id
+                                   select subCategory).ToListAsync();
+            return Json(new SelectList(subCategories, "Id", "Name"));
         }
 
     }
